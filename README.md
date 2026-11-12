@@ -2,16 +2,20 @@
 
 A RESTful backend API built with **Node.js**, **Express.js**, and **SQLite** for managing campus bike share riders, bicycles, and rentals.
 
+- **Course:** Backend Development Fundamentals
+- **LG Group:** NU-AIAGAI2C-G03
+- **GitHub Repository:** https://github.com/harshithsirikonda709-byte/spincycle-bikes
+
 ---
 
-## LG Group Members
+## LG Group Members (NU-AIAGAI2C-G03)
 
-- HARSHITH
-- PRAVEEN VARMA
-- AKHIL
-- KRISHNA HARSHA
-- ASHRAF
-- ASHOK
+1. HARSHITH
+2. PRAVEEN VARMA
+3. AKHIL
+4. KRISHNA HARSHA
+5. ASHRAF
+6. ASHOK
 
 ---
 
