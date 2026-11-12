@@ -1,0 +1,830 @@
+{
+  "info": {
+    "name": "SpinCycle Bikes – Campus Bike Share Management System",
+    "description": "Complete Postman collection with automated test assertions for Rider, Bike CRUD + Search + Auto Bike Code Generation, and Rental APIs.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "riderId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "rider2Id",
+      "value": "2",
+      "type": "string"
+    },
+    {
+      "key": "bike1Id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "bike1Code",
+      "value": "BKE-0001",
+      "type": "string"
+    },
+    {
+      "key": "bike2Id",
+      "value": "2",
+      "type": "string"
+    },
+    {
+      "key": "bike2Code",
+      "value": "BKE-0002",
+      "type": "string"
+    },
+    {
+      "key": "bike3Id",
+      "value": "3",
+      "type": "string"
+    },
+    {
+      "key": "rentalId",
+      "value": "1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "01. System",
+      "item": [
+        {
+          "name": "Health & API Overview",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Returns service metadata', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.service).to.include('SpinCycle Bikes');",
+                  "  pm.expect(json.status).to.eql('running');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": ["{{baseUrl}}"],
+              "path": [""]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "02. Riders",
+      "item": [
+        {
+          "name": "GET All Riders",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Response is an array', function () {",
+                  "  pm.expect(pm.response.json()).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/riders",
+              "host": ["{{baseUrl}}"],
+              "path": ["riders"]
+            }
+          }
+        },
+        {
+          "name": "POST Create Rider 1",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test('Rider created with id, name, phone', function () {",
+                  "  const data = pm.response.json();",
+                  "  pm.expect(data.id).to.be.a('number');",
+                  "  pm.expect(data.name).to.eql('Alice Morgan');",
+                  "  pm.expect(data.phone).to.eql('+1 555-0101');",
+                  "  pm.collectionVariables.set('riderId', String(data.id));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Alice Morgan\",\n  \"phone\": \"+1 555-0101\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/riders",
+              "host": ["{{baseUrl}}"],
+              "path": ["riders"]
+            }
+          }
+        },
+        {
+          "name": "POST Create Rider 2",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test('Second rider created', function () {",
+                  "  const data = pm.response.json();",
+                  "  pm.expect(data.id).to.be.a('number');",
+                  "  pm.collectionVariables.set('rider2Id', String(data.id));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Brian Chen\",\n  \"phone\": \"555-0102\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/riders",
+              "host": ["{{baseUrl}}"],
+              "path": ["riders"]
+            }
+          }
+        },
+        {
+          "name": "POST Create Rider - Validation Error (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Rejects invalid rider input with 400', function () {",
+                  "  pm.response.to.have.status(400);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"\",\n  \"phone\": \"invalid\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/riders",
+              "host": ["{{baseUrl}}"],
+              "path": ["riders"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "03. Bikes",
+      "item": [
+        {
+          "name": "POST Create Bike 1 (Auto Code BKE-0001)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test('Generates sequential bike_code (BKE-0001 for first bike)', function () {",
+                  "  const data = pm.response.json();",
+                  "  pm.expect(data.bike_code).to.match(/^BKE-\\d{4,}$/);",
+                  "  if (data.id === 1) {",
+                  "    pm.expect(data.bike_code).to.eql('BKE-0001');",
+                  "  }",
+                  "  pm.expect(data.status).to.eql('available');",
+                  "  pm.collectionVariables.set('bike1Id', String(data.id));",
+                  "  pm.collectionVariables.set('bike1Code', data.bike_code);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Summit X1\",\n  \"type\": \"Mountain\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/bikes",
+              "host": ["{{baseUrl}}"],
+              "path": ["bikes"]
+            }
+          }
+        },
+        {
+          "name": "POST Create Bike 2 (Auto Code BKE-0002)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test('Generates next sequential bike_code', function () {",
+                  "  const data = pm.response.json();",
+                  "  const prevNum = parseInt(pm.collectionVariables.get('bike1Code').replace('BKE-', ''), 10);",
+                  "  const currNum = parseInt(data.bike_code.replace('BKE-', ''), 10);",
+                  "  pm.expect(currNum).to.eql(prevNum + 1);",
+                  "  if (data.id === 2) {",
+                  "    pm.expect(data.bike_code).to.eql('BKE-0002');",
+                  "  }",
+                  "  pm.collectionVariables.set('bike2Id', String(data.id));",
+                  "  pm.collectionVariables.set('bike2Code', data.bike_code);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"City Glider\",\n  \"type\": \"Hybrid\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/bikes",
+              "host": ["{{baseUrl}}"],
+              "path": ["bikes"]
+            }
+          }
+        },
+        {
+          "name": "POST Create Bike - Reject Client bike_code (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Rejects client-provided bike_code with 400', function () {",
+                  "  pm.response.to.have.status(400);",
+                  "  pm.expect(pm.response.json().message).to.include('bike_code');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"bike_code\": \"BKE-9999\",\n  \"name\": \"Custom Code Attempt\",\n  \"type\": \"Road\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/bikes",
+              "host": ["{{baseUrl}}"],
+              "path": ["bikes"]
+            }
+          }
+        },
+        {
+          "name": "GET All Bikes",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Returns array of bikes', function () {",
+                  "  pm.expect(pm.response.json()).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bikes",
+              "host": ["{{baseUrl}}"],
+              "path": ["bikes"]
+            }
+          }
+        },
+        {
+          "name": "GET Search Bikes by Type (Mountain)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('All returned bikes match type Mountain', function () {",
+                  "  const bikes = pm.response.json();",
+                  "  pm.expect(bikes).to.be.an('array').that.is.not.empty;",
+                  "  bikes.forEach(function (bike) {",
+                  "    pm.expect(bike.type.toLowerCase()).to.eql('mountain');",
+                  "  });",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bikes?type=Mountain",
+              "host": ["{{baseUrl}}"],
+              "path": ["bikes"],
+              "query": [
+                { "key": "type", "value": "Mountain" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET Bike by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Returns requested bike', function () {",
+                  "  const data = pm.response.json();",
+                  "  pm.expect(String(data.id)).to.eql(pm.collectionVariables.get('bike1Id'));",
+                  "  pm.expect(data.bike_code).to.eql(pm.collectionVariables.get('bike1Code'));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bikes/{{bike1Id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["bikes", "{{bike1Id}}"]
+            }
+          }
+        },
+        {
+          "name": "GET Bike by ID - Not Found (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 404', function () {",
+                  "  pm.response.to.have.status(404);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bikes/99999",
+              "host": ["{{baseUrl}}"],
+              "path": ["bikes", "99999"]
+            }
+          }
+        },
+        {
+          "name": "PUT Update Bike (Preserves bike_code)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Updates fields without changing bike_code', function () {",
+                  "  const data = pm.response.json();",
+                  "  pm.expect(data.name).to.eql('Summit X1 Pro');",
+                  "  pm.expect(data.bike_code).to.eql(pm.collectionVariables.get('bike1Code'));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Summit X1 Pro\",\n  \"type\": \"Mountain\",\n  \"status\": \"available\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/bikes/{{bike1Id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["bikes", "{{bike1Id}}"]
+            }
+          }
+        },
+        {
+          "name": "PUT Update Bike - Reject bike_code Modification (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Rejects bike_code modification on update with 400', function () {",
+                  "  pm.response.to.have.status(400);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"bike_code\": \"BKE-8888\",\n  \"name\": \"Tamper Test\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/bikes/{{bike1Id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["bikes", "{{bike1Id}}"]
+            }
+          }
+        },
+        {
+          "name": "DELETE Bike 2",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Deleted bike 2', function () {",
+                  "  const data = pm.response.json();",
+                  "  pm.expect(data.bike.bike_code).to.eql(pm.collectionVariables.get('bike2Code'));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bikes/{{bike2Id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["bikes", "{{bike2Id}}"]
+            }
+          }
+        },
+        {
+          "name": "POST Create Bike 3 (Verifies Deleted Code Is Never Reused)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test('Does not reuse deleted bike2Code', function () {",
+                  "  const data = pm.response.json();",
+                  "  const deletedNum = parseInt(pm.collectionVariables.get('bike2Code').replace('BKE-', ''), 10);",
+                  "  const newNum = parseInt(data.bike_code.replace('BKE-', ''), 10);",
+                  "  pm.expect(newNum).to.be.greaterThan(deletedNum);",
+                  "  pm.collectionVariables.set('bike3Id', String(data.id));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Campus Cruiser\",\n  \"type\": \"Cruiser\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/bikes",
+              "host": ["{{baseUrl}}"],
+              "path": ["bikes"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "04. Rentals",
+      "item": [
+        {
+          "name": "POST Create Rental",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test('Rental created as active (return_date is null)', function () {",
+                  "  const data = pm.response.json();",
+                  "  pm.expect(data.id).to.be.a('number');",
+                  "  pm.expect(data.return_date).to.eql(null);",
+                  "  pm.collectionVariables.set('rentalId', String(data.id));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rider_id\": {{riderId}},\n  \"bike_id\": {{bike1Id}}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/rentals",
+              "host": ["{{baseUrl}}"],
+              "path": ["rentals"]
+            }
+          }
+        },
+        {
+          "name": "POST Create Rental - Prevent Duplicate Active Rental (409)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Prevents duplicate active rental of same bike with 409', function () {",
+                  "  pm.response.to.have.status(409);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rider_id\": {{rider2Id}},\n  \"bike_id\": {{bike1Id}}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/rentals",
+              "host": ["{{baseUrl}}"],
+              "path": ["rentals"]
+            }
+          }
+        },
+        {
+          "name": "POST Create Rental - Non-Existent Bike (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Rejects non-existent bike_id with 404', function () {",
+                  "  pm.response.to.have.status(404);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rider_id\": {{riderId}},\n  \"bike_id\": 99999\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/rentals",
+              "host": ["{{baseUrl}}"],
+              "path": ["rentals"]
+            }
+          }
+        },
+        {
+          "name": "GET All Rentals",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Returns array of rentals', function () {",
+                  "  pm.expect(pm.response.json()).to.be.an('array').that.is.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/rentals",
+              "host": ["{{baseUrl}}"],
+              "path": ["rentals"]
+            }
+          }
+        },
+        {
+          "name": "GET Rental Details (SQL JOIN)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Returns joined rider_name and bike_name for the created rental', function () {",
+                  "  const rows = pm.response.json();",
+                  "  pm.expect(rows).to.be.an('array').that.is.not.empty;",
+                  "  const targetId = Number(pm.collectionVariables.get('rentalId'));",
+                  "  const rental = rows.find(function (r) { return r.id === targetId; });",
+                  "  pm.expect(rental, 'Created rental should appear in /rentals/details').to.be.an('object');",
+                  "  pm.expect(rental.rider_name).to.eql('Alice Morgan');",
+                  "  pm.expect(rental.bike_name).to.eql('Summit X1 Pro');",
+                  "  pm.expect(rental.bike_code).to.eql(pm.collectionVariables.get('bike1Code'));",
+                  "  pm.expect(rental.bike_status).to.eql('rented');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/rentals/details",
+              "host": ["{{baseUrl}}"],
+              "path": ["rentals", "details"]
+            }
+          }
+        },
+        {
+          "name": "DELETE Rented Bike - Prevented (409)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Prevents deleting a currently rented bike with 409', function () {",
+                  "  pm.response.to.have.status(409);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bikes/{{bike1Id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["bikes", "{{bike1Id}}"]
+            }
+          }
+        },
+        {
+          "name": "PATCH Return Rental",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Sets return_date on rental', function () {",
+                  "  const data = pm.response.json();",
+                  "  pm.expect(data.return_date).to.be.a('string');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/rentals/{{rentalId}}/return",
+              "host": ["{{baseUrl}}"],
+              "path": ["rentals", "{{rentalId}}", "return"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+
